@@ -6,8 +6,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+
+import com.google.firebase.Timestamp; // ✅ IMPORTANTE: Importación añadida para manejar fechas de Firebase
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.Calendar;
 
 public class PlantReminderReceiver extends BroadcastReceiver {
@@ -25,7 +28,6 @@ public class PlantReminderReceiver extends BroadcastReceiver {
                 "android.intent.action.QUICKBOOT_POWERON".equals(intent.getAction())) {
             checkAllPlants(context);
         }
-        // ✅ NUEVO: Manejar recordatorios específicos
         else if ("ACTION_SINGLE_REMINDER".equals(intent.getAction())) {
             String plantaNombre = intent.getStringExtra("planta_nombre");
             int diasRiego = intent.getIntExtra("dias_riego", 7);
@@ -38,7 +40,6 @@ public class PlantReminderReceiver extends BroadcastReceiver {
         }
     }
 
-    // ✅ NUEVO MÉTODO: Enviar recordatorio personalizado
     private void enviarRecordatorioPersonalizado(Context context, String plantaNombre, int diasRiego, int diasFertilizante, String plantaId) {
         try {
             NotificationHelper notificationHelper = new NotificationHelper(context);
@@ -82,9 +83,11 @@ public class PlantReminderReceiver extends BroadcastReceiver {
 
                             Integer diasRiego = getIntValue(document, "diasRiego", 7);
                             Integer diasFertilizante = getIntValue(document, "diasFertilizante", 30);
-                            Long ultimoRiego = getLongValue(document, "ultimoRiego");
-                            Long ultimaFertilizacion = getLongValue(document, "ultimaFertilizacion");
-                            Long fechaRegistro = getLongValue(document, "fechaRegistro");
+
+                            // ✅ CORREGIDO: Usamos getDateValue para leer correctamente fechas o timestamps
+                            Long ultimoRiego = getDateValue(document, "ultimoRiego");
+                            Long ultimaFertilizacion = getDateValue(document, "ultimaFertilizacion");
+                            Long fechaRegistro = getDateValue(document, "fechaRegistro");
 
                             if (displayName != null) {
                                 // Verificar riego
@@ -131,7 +134,7 @@ public class PlantReminderReceiver extends BroadcastReceiver {
                 });
     }
 
-    // Clases auxiliares para estado (mantener igual)
+    // Clases auxiliares para estado
     private static class WateringStatus {
         boolean needsWatering;
         int daysSince;
@@ -177,15 +180,21 @@ public class PlantReminderReceiver extends BroadcastReceiver {
         }
     }
 
-    private Long getLongValue(QueryDocumentSnapshot document, String field) {
+    // ✅ NUEVO MÉTODO: Maneja Timestamp de Firebase y Long
+    private Long getDateValue(QueryDocumentSnapshot document, String field) {
         try {
+            // Primero intenta obtenerlo como Timestamp (formato nativo de Firebase)
+            Timestamp timestamp = document.getTimestamp(field);
+            if (timestamp != null) {
+                return timestamp.getSeconds();
+            }
+            // Si no es Timestamp, intenta como Long (por si acaso se guardó así)
             return document.getLong(field);
         } catch (Exception e) {
             return null;
         }
     }
 
-    // Método para programar la verificación diaria (mejorado)
     public static void scheduleDailyCheck(Context context) {
         try {
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -199,19 +208,16 @@ public class PlantReminderReceiver extends BroadcastReceiver {
                     PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
             );
 
-            // Programar para las 9:00 AM todos los días
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(System.currentTimeMillis());
             calendar.set(Calendar.HOUR_OF_DAY, 9);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
 
-            // Si ya pasaron las 9:00 AM, programar para mañana
             if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
                 calendar.add(Calendar.DAY_OF_YEAR, 1);
             }
 
-            // Usar setInexactRepeating para mejor eficiencia
             alarmManager.setInexactRepeating(
                     AlarmManager.RTC_WAKEUP,
                     calendar.getTimeInMillis(),
@@ -226,7 +232,6 @@ public class PlantReminderReceiver extends BroadcastReceiver {
         }
     }
 
-    // Método para cancelar las verificaciones (mantener igual)
     public static void cancelDailyCheck(Context context) {
         try {
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

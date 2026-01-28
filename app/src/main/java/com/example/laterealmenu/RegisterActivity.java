@@ -27,7 +27,6 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        // Inicializar Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
@@ -50,7 +49,6 @@ public class RegisterActivity extends AppCompatActivity {
         tvLogin.setOnClickListener(v -> goToLogin());
     }
 
-    // En RegisterActivity.java - actualizar el método registerUser
     private void registerUser() {
         String nombre = etNombre.getText().toString().trim();
         String apellido = etApellido.getText().toString().trim();
@@ -58,13 +56,11 @@ public class RegisterActivity extends AppCompatActivity {
         String password = etPassword.getText().toString().trim();
         String confirmPassword = etConfirmPassword.getText().toString().trim();
 
-        // Validaciones mejoradas
         if (nombre.isEmpty() || apellido.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             Toast.makeText(this, "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Validar que nombre y apellido solo contengan letras
         if (!nombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+")) {
             Toast.makeText(this, "El nombre solo puede contener letras", Toast.LENGTH_SHORT).show();
             return;
@@ -75,13 +71,11 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        // Validar email
         if (!isValidEmail(email)) {
             Toast.makeText(this, "Ingresa un email válido", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Validar contraseña con requisitos
         if (!isValidPassword(password)) {
             Toast.makeText(this, "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número", Toast.LENGTH_LONG).show();
             return;
@@ -92,11 +86,9 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        // Mostrar progreso
         btnRegister.setEnabled(false);
         btnRegister.setText("Creando cuenta...");
 
-        // Crear usuario en Firebase Authentication
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
@@ -105,28 +97,19 @@ public class RegisterActivity extends AppCompatActivity {
                     } else {
                         btnRegister.setEnabled(true);
                         btnRegister.setText("Registrarse");
-                        Toast.makeText(RegisterActivity.this,
-                                "Error al registrar: " + task.getException().getMessage(),
-                                Toast.LENGTH_LONG).show();
+                        Toast.makeText(RegisterActivity.this, "Error al registrar: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
     }
 
-    // Método para validar contraseña
     private boolean isValidPassword(String password) {
-        // Al menos 8 caracteres, una mayúscula, una minúscula y un número
         String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
         return password.matches(passwordPattern);
     }
-    private void guardarUsuarioEnFirestore(FirebaseUser user, String nombre, String apellido, String email) {
-        if (user == null) {
-            btnRegister.setEnabled(true);
-            btnRegister.setText("Registrarse");
-            Toast.makeText(this, "Error: Usuario no creado", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
-        // Crear objeto usuario para Firestore
+    private void guardarUsuarioEnFirestore(FirebaseUser user, String nombre, String apellido, String email) {
+        if (user == null) return;
+
         Map<String, Object> usuario = new HashMap<>();
         usuario.put("uid", user.getUid());
         usuario.put("nombre", nombre);
@@ -137,34 +120,20 @@ public class RegisterActivity extends AppCompatActivity {
         usuario.put("plantasCount", 0);
         usuario.put("nivel", "principiante");
 
-        // Guardar en Firestore
+        usuario.put("diagnosticosCount", 0);
+
         db.collection("usuarios")
-                .document(user.getUid()) // Usar el UID como ID del documento
+                .document(user.getUid())
                 .set(usuario)
                 .addOnSuccessListener(aVoid -> {
-                    // Éxito: usuario guardado en Firestore
                     Toast.makeText(RegisterActivity.this, "¡Cuenta creada exitosamente!", Toast.LENGTH_SHORT).show();
-
-                    // Opcional: enviar verificación de email
-                    user.sendEmailVerification()
-                            .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(RegisterActivity.this,
-                                            "Se envió un email de verificación",
-                                            Toast.LENGTH_LONG).show();
-                                }
-                            });
-
-                    // Ir a MainActivity
+                    user.sendEmailVerification();
                     startMainActivity(user, nombre);
                 })
                 .addOnFailureListener(e -> {
-                    // Error en Firestore
                     btnRegister.setEnabled(true);
                     btnRegister.setText("Registrarse");
-                    Toast.makeText(RegisterActivity.this,
-                            "Error guardando datos: " + e.getMessage(),
-                            Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterActivity.this, "Error guardando datos: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
     }
 
@@ -187,3 +156,4 @@ public class RegisterActivity extends AppCompatActivity {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 }
+
