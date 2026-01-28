@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="#F8F9FA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Título -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📅 Calendario de Siembra"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#004D40"
+            android:gravity="center"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Sección de búsqueda de planta específica -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🔍 Buscar Planta Específica"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#004D40"
+            android:layout_marginBottom="12dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxStrokeColor="#004D40"
+            app:hintTextColor="#004D40">
+
+            <AutoCompleteTextView
+                android:id="@+id/actvBuscarPlanta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Escribe el nombre de una planta..."
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:padding="16dp"
+                android:completionThreshold="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Botón Buscar con IA - COLOR MÁS FUERTE -->
+        <Button
+            android:id="@+id/btnBuscarPlanta"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="🌿 Buscar con IA"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#00695C"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Separador -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Selección de mes -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📆 Selecciona un Mes"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#004D40"
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:id="@+id/tvMesSeleccionado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Selecciona un mes para ver plantas de temporada"
+            android:textSize="14sp"
+            android:textColor="#212121"
+            android:gravity="center"
+            android:layout_marginBottom="16dp"
+            android:padding="12dp"
+            android:background="#E8F5E9" />
+
+        <!-- Grid de meses (ORIGINAL) -->
+        <GridView
+            android:id="@+id/gridMeses"
+            android:layout_width="match_parent"
+            android:layout_height="281dp"
+            android:layout_marginBottom="24dp"
+            android:horizontalSpacing="8dp"
+            android:backgroundTint="#004D40"
+            android:numColumns="3"
+            android:verticalSpacing="8dp" />
+
+        <!-- Resultados -->
+        <LinearLayout
+            android:id="@+id/layoutResultados"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+
+            android:padding="20dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🌱 Resultados"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#004D40"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:id="@+id/tvResultadoTemporada"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Aquí aparecerán las plantas de temporada..."
+                android:textSize="14sp"
+                android:textColor="#000000"
+                android:lineSpacingExtra="4dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

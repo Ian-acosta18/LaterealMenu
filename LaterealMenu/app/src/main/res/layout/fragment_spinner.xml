@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".spinner">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="260dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtresultado"
+            android:layout_width="match_parent"
+            android:layout_height="33dp"
+            android:text="TextView" />
+
+        <EditText
+            android:id="@+id/edtnumero1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/numero"
+            android:inputType="numberDecimal" />
+
+        <EditText
+            android:id="@+id/edtnumero2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/numero2"
+            android:inputType="numberDecimal" />
+
+        <Spinner
+            android:id="@+id/spinnerOperaciones"
+            android:layout_width="178dp"
+            android:layout_height="51dp" />
+
+        <Button
+            android:id="@+id/btnverificar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btnVerificar" />
+    </LinearLayout>
+</FrameLayout>

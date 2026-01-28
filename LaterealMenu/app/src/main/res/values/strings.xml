@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">LaterealMenu</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="Suma">Suma</string>
+    <string name="resta">Resta</string>
+    <string name="multiplicacion">Multiplicacion</string>
+    <string name="division">Division</string>
+    <string name="numero2">Ingresa el segundo numero</string>
+    <string name="numero">Ingresa el primer numero</string>
+    <string name="btnVerificar">Verificar</string>
+    <string-array name="operaciones_array">
+        <item>Suma</item>
+        <item>Resta</item>
+        <item>Multiplicacion</item>
+        <item>Division</item>
+    </string-array>
+    <string name="login">Iniciar Sesion</string>
+    <string name="correo">Ingresa tu correo</string>
+    <string name="contrasena">Ingresa tu contrasena</string>
+</resources>

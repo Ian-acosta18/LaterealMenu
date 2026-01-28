@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_inicio"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="Inicio" />
+
+    <item
+        android:id="@+id/nav_diagnostico_ia"
+        android:icon="@android:drawable/ic_menu_camera"
+        android:title="Diagnóstico IA" />
+
+    <item
+        android:id="@+id/nav_mis_plantas"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="Mis Plantas" />
+
+    <item
+        android:id="@+id/nav_agregar_planta"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="Agregar Planta" />
+
+    <item
+        android:id="@+id/nav_mis_consultas"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="Mis Consultas" />
+
+    <item
+        android:id="@+id/nav_calendario"
+        android:icon="@android:drawable/ic_menu_my_calendar"
+        android:title="Calendario" />
+
+    <item
+        android:id="@+id/nav_consejos"
+        android:icon="@android:drawable/ic_menu_help"
+        android:title="Consejos" />
+
+    <item
+        android:id="@+id/nav_logout"
+        android:icon="@android:drawable/ic_lock_power_off"
+        android:title="Cerrar Sesión" />
+
+</menu>

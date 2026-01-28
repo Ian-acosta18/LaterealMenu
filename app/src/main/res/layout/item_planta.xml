@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <!-- ImageView para la imagen de la planta -->
+        <ImageView
+            android:id="@+id/imgPlanta"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            android:background="#E8F5E9"
+            android:contentDescription="Imagen de la planta"
+            android:layout_marginEnd="12dp" />
+
+        <!-- Contenido textual -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Título y Estado -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvTitulo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Título Registro"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#2E7D32"
+                    android:ellipsize="end"
+                    android:maxLines="1" />
+
+                <TextView
+                    android:id="@+id/tvEstado"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Activo"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:background="#E8F5E9"
+                    android:paddingHorizontal="6dp"
+                    android:paddingVertical="2dp"
+                    android:gravity="center"
+                    android:layout_marginStart="8dp" />
+
+            </LinearLayout>
+
+            <!-- Nombre común y científico -->
+            <TextView
+                android:id="@+id/tvNombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nombre Planta"
+                android:textSize="14sp"
+                android:textColor="#666666"
+                android:layout_marginTop="2dp" />
+
+            <TextView
+                android:id="@+id/tvNombreCientifico"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nombre científico"
+                android:textSize="12sp"
+                android:textColor="#999999"
+                android:layout_marginTop="1dp" />
+
+            <!-- Información de progreso y prioridad -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="6px"
+                android:weightSum="2">
+
+
+
+                <TextView
+                    android:id="@+id/tvPrioridad"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Media"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:background="#FFF3E0"
+                    android:paddingHorizontal="4dp"
+                    android:paddingVertical="1dp"
+                    android:textColor="#FF9800" />
+
+            </LinearLayout>
+
+            <!-- Información de progreso diario -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="4px"
+                android:weightSum="2">
+
+                <TextView
+                    android:id="@+id/tvRiegoHoy"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="💧 No regado"
+                    android:textSize="11sp"
+                    android:textColor="#F44336" />
+
+                <TextView
+                    android:id="@+id/tvFertilizacionHoy"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🌱 No fertilizado"
+                    android:textSize="11sp"
+                    android:textColor="#F44336"
+                    android:gravity="end" />
+
+            </LinearLayout>
+
+            <!-- Próximo riego -->
+            <TextView
+                android:id="@+id/tvProximoRiego"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Próximo riego: "
+                android:textSize="11sp"
+                android:textColor="#4CAF50"
+                android:layout_marginTop="4dp" />
+
+            <!-- Botones con iconos profesionales -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:weightSum="4">
+
+                <!-- Ver Detalles -->
+                <ImageButton
+                    android:id="@+id/btnVerDetalles"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:src="@android:drawable/ic_menu_info_details"
+                    android:contentDescription="Ver detalles"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="6dp"
+                    android:layout_marginEnd="2dp"
+                    android:tint="#2196F3" />
+
+                <!-- Editar -->
+                <ImageButton
+                    android:id="@+id/btnEditar"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:src="@android:drawable/ic_menu_edit"
+                    android:contentDescription="Editar planta"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="6dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:tint="#FF9800" />
+
+                <!-- Progreso -->
+                <ImageButton
+                    android:id="@+id/btnProgreso"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:src="@android:drawable/ic_menu_manage"
+                    android:contentDescription="Gestionar progreso"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="6dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:tint="#9C27B0" />
+
+                <!-- Eliminar -->
+                <ImageButton
+                    android:id="@+id/btnEliminar"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:src="@android:drawable/ic_menu_delete"
+                    android:contentDescription="Eliminar planta"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="6dp"
+                    android:layout_marginStart="2dp"
+                    android:tint="#F44336" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

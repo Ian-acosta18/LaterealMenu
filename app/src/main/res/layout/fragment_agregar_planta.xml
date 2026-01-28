@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="#F8F9FA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Título -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🌿 Agregar Planta"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#1B5E20"
+            android:gravity="center"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Imagen de la planta -->
+        <ImageView
+            android:id="@+id/imgPlantaManual"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:background="#E0E0E0"
+            android:scaleType="centerCrop"
+            android:visibility="visible"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Botones de imagen -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/btnTomarFotoManual"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:layout_weight="1"
+                android:text="📷 Tomar Foto"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="#4CAF50" />
+
+            <Button
+                android:id="@+id/btnGaleriaManual"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:layout_weight="1"
+                android:text="🖼️ Galería"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="#2196F3" />
+
+        </LinearLayout>
+
+        <!-- Botón Analizar con IA -->
+        <Button
+            android:id="@+id/btnAnalizarIA"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="🤖 Analizar con IA"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#FF9800"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressBarManual"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Resultado de IA -->
+        <LinearLayout
+            android:id="@+id/layoutResultadoIA"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#E8F5E8"
+            android:padding="16dp"
+            android:visibility="gone"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="✅ Identificado por IA"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#1B5E20"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tvPlantaIdentificada"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Planta identificada"
+                android:textSize="14sp"
+                android:textColor="#333333"
+                android:layout_marginBottom="16dp" />
+
+            <Button
+                android:id="@+id/btnUsarDatosIA"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:text="✅ Usar estos datos"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#4CAF50" />
+
+        </LinearLayout> <!-- ✅ AQUÍ ESTABA FALTANDO CERRAR ESTE LinearLayout -->
+
+        <!-- Título del registro -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxStrokeColor="#1B5E20"
+            app:hintTextColor="#1B5E20">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTituloRegistro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Título del registro *"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:padding="16dp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Nombre de la planta -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxStrokeColor="#1B5E20"
+            app:hintTextColor="#1B5E20">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etNombrePlanta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nombre de la planta *"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:padding="16dp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Descripción breve -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxStrokeColor="#1B5E20"
+            app:hintTextColor="#1B5E20">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etDescripcionBreve"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Descripción breve *"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:padding="16dp"
+                android:minLines="3"
+                android:maxLines="5" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Categoría / Tipo -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxStrokeColor="#1B5E20"
+            app:hintTextColor="#1B5E20">
+
+            <AutoCompleteTextView
+                android:id="@+id/actvCategoria"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Categoría / Tipo"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:padding="16dp"
+                android:completionThreshold="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Prioridad -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxStrokeColor="#1B5E20"
+            app:hintTextColor="#1B5E20">
+
+            <AutoCompleteTextView
+                android:id="@+id/actvPrioridad"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Prioridad *"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:padding="16dp"
+                android:completionThreshold="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Fecha de creación -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="📅 Fecha de creación:"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/tvFechaCreacion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hoy"
+                android:textSize="14sp"
+                android:textColor="#0D47A1"
+                android:padding="12dp"
+                android:background="#E3F2FD"
+                android:clickable="true"
+                android:focusable="true"
+                android:backgroundTint="#E3F2FD" />
+
+        </LinearLayout>
+
+        <!-- SECCIÓN DE CUIDADOS -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="💧 Configuración de Cuidados"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#1B5E20"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Días de riego -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="💧 Días entre riegos:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginBottom="8dp" />
+
+        <SeekBar
+            android:id="@+id/seekBarRiegoManual"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="29"
+            android:progress="6"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tvDiasRiego"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="7 días"
+            android:textSize="14sp"
+            android:textColor="#0D47A1"
+            android:gravity="center"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Días de fertilizante -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🌱 Días entre fertilizaciones:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginBottom="8dp" />
+
+        <SeekBar
+            android:id="@+id/seekBarFertilizante"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="89"
+            android:progress="29"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tvDiasFertilizante"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="30 días"
+            android:textSize="14sp"
+            android:textColor="#E65100"
+            android:gravity="center"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Notificaciones -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🔔 Recibir notificaciones de cuidados"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#333333" />
+
+            <Switch
+                android:id="@+id/switchNotificacionesManual"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true" />
+
+        </LinearLayout>
+
+        <!-- Botón Guardar -->
+        <Button
+            android:id="@+id/btnGuardarPlantaManual"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="💾 Guardar Planta"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#1B5E20" />
+
+    </LinearLayout>
+
+</ScrollView>

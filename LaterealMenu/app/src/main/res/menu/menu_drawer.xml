@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/nav_inicio"
+        android:title="Inicio"
+        android:icon="@drawable/ic_home"/>
+    <item android:id="@+id/nav_calculadora"
+        android:title="Calculadora"
+        android:icon="@drawable/ic_calculadora"/>
+    <item android:id="@+id/nav_spinner"
+        android:title="Sppiner"
+        android:icon="@drawable/ic_spinner"/>
+    <item android:id="@+id/nav_view"
+        android:title="List_view"
+        android:icon="@drawable/ic_listview"/>
+    <item android:id="@+id/nav_"
+        android:title="RaddioButton"
+        android:icon="@drawable/ic_radio"/>
+    <item android:id="@+id/checkbox"
+        android:title="CheckButton"
+        android:icon="@drawable/ic_check"/>
+    <item android:id="@+id/buttonLogin"
+        android:title="@string/login"
+        android:icon="@drawable/ic_login"/>
+
+</menu>

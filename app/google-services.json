@@ -1,0 +1,86 @@
+{
+  "project_info": {
+    "project_number": "632475196811",
+    "project_id": "login-6ab9c",
+    "storage_bucket": "login-6ab9c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:632475196811:android:b9bf45b46b9a47a8c4a38e",
+        "android_client_info": {
+          "package_name": "com.example.agricare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAi5fCCe-fGZ8zCcaNoC77vijUl4FUVEeQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:632475196811:android:1a5a4362b2dfb672c4a38e",
+        "android_client_info": {
+          "package_name": "com.example.crud"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAi5fCCe-fGZ8zCcaNoC77vijUl4FUVEeQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:632475196811:android:532cab763fcff0a7c4a38e",
+        "android_client_info": {
+          "package_name": "com.example.laterealmenu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAi5fCCe-fGZ8zCcaNoC77vijUl4FUVEeQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:632475196811:android:07f77d27665b139ec4a38e",
+        "android_client_info": {
+          "package_name": "com.example.registrar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAi5fCCe-fGZ8zCcaNoC77vijUl4FUVEeQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

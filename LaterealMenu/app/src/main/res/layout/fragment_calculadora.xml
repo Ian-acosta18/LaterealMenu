@@ -1,0 +1,62 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/Contenedor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingresa un número"
+            android:inputType="numberDecimal" />
+
+        <EditText
+            android:id="@+id/txt_numero2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/numero2"
+            android:inputType="numberDecimal" />
+
+        <TextView
+            android:id="@+id/tv_estado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Estado" />
+
+        <Button
+            android:id="@+id/btn_suma"
+            android:layout_width="159dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/Suma"
+            android:text="@string/Suma" />
+
+        <Button
+            android:id="@+id/btn_resta"
+            android:layout_width="158dp"
+            android:layout_height="wrap_content"
+            android:text="@string/resta" />
+
+        <Button
+            android:id="@+id/btn_multiplicacion"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:text="@string/multiplicacion" />
+
+        <Button
+            android:id="@+id/btn_division"
+            android:layout_width="158dp"
+            android:layout_height="wrap_content"
+            android:text="@string/division" />
+
+    </LinearLayout>
+</ScrollView>

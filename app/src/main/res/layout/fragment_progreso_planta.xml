@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="#F8F9FA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Título -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📊 Progreso Diario"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#2E7D32"
+            android:gravity="center"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Sección de Riego -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="💧 Control de Riego"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#2196F3"
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:id="@+id/tvEstadoRiego"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Estado de riego"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tvTotalRiegos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Total de riegos: 0"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnRegar"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="💧 Registrar Riego de Hoy"
+            android:textSize="16sp"
+            android:backgroundTint="#2196F3"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Sección de Fertilización -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🌱 Control de Fertilización"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FF9800"
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:id="@+id/tvEstadoFertilizacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Estado de fertilización"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tvTotalFertilizaciones"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Total de fertilizaciones: 0"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnFertilizar"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="🌱 Registrar Fertilización de Hoy"
+            android:textSize="16sp"
+            android:backgroundTint="#FF9800"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Notas Adicionales -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📝 Notas del Día"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#9C27B0"
+            android:layout_marginBottom="12dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxStrokeColor="#9C27B0"
+            app:hintTextColor="#9C27B0">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etNotasAdicionales"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Observaciones, cambios, problemas, etc..."
+                android:textSize="16sp"
+                android:padding="16dp"
+                android:minLines="3"
+                android:maxLines="5" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/btnGuardarNotas"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="💾 Guardar Notas"
+            android:textSize="16sp"
+            android:backgroundTint="#9C27B0"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+
+</ScrollView>
