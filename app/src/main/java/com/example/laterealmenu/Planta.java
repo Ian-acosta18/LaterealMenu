@@ -24,7 +24,7 @@ public class Planta implements Serializable {
     private int progreso;
     private boolean requiereSeguimiento;
 
-    // ✅ CAMBIAR: Usar Object para manejar tanto Long como Timestamp
+
     private Object ultimoRiego;
     private Object proximoRiego;
     private Object proximaFertilizacion;
@@ -51,7 +51,7 @@ public class Planta implements Serializable {
     // Constructores
     public Planta() {}
 
-    // ✅ NUEVO: Métodos para obtener Long (maneja tanto Long como Timestamp)
+
     public Long getUltimoRiegoLong() {
         return convertToLong(ultimoRiego);
     }
@@ -76,7 +76,7 @@ public class Planta implements Serializable {
         return convertToLong(fechaUltimoProgreso);
     }
 
-    // ✅ MÉTODO AUXILIAR: Convierte Object a Long (maneja Timestamp y Long)
+
     private Long convertToLong(Object obj) {
         if (obj == null) {
             return null;
@@ -91,7 +91,7 @@ public class Planta implements Serializable {
         return null;
     }
 
-    // ✅ MÉTODOS DE CONVERSIÓN A DATE
+
     public Date getUltimoRiegoAsDate() {
         Long seconds = getUltimoRiegoLong();
         return seconds != null ? new Date(seconds * 1000) : new Date();

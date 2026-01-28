@@ -100,16 +100,16 @@ public class NotificationHelper {
     }
 
     private int getNotificationIcon(String type) {
-        // Usar iconos del sistema para evitar errores de recursos
+
         switch (type) {
             case "water":
-                return android.R.drawable.ic_menu_help; // Icono temporal
+                return android.R.drawable.ic_menu_help;
             case "fertilizer":
-                return android.R.drawable.ic_menu_info_details; // Icono temporal
+                return android.R.drawable.ic_menu_info_details;
             case "info":
-                return android.R.drawable.ic_dialog_info; // Icono temporal
+                return android.R.drawable.ic_dialog_info;
             default:
-                return android.R.drawable.ic_dialog_alert; // Icono temporal
+                return android.R.drawable.ic_dialog_alert;
         }
     }
 

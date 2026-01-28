@@ -54,6 +54,7 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -66,8 +67,12 @@ public class AgregarPlantaFragment extends Fragment {
     private static final int PERMISSION_REQUEST_CAMERA = 102;
     private static final int PERMISSION_REQUEST_GALLERY = 103;
 
-    private static final String PLANT_ID_API_KEY = "0rVcm58Hq5Wwr1rT43saHBD7xoBEzATrZ9Y2aZzebEVEQFiao1";
-    private static final String PLANT_ID_API_URL = "https://api.plant.id/v2/identify";
+    // ✅ APIs COMBINADAS
+    private static final String PLANTNET_API_KEY = "2b10AuV0b7jnV0KQZwcpDflu"; // Reemplaza con tu key de PlantNet
+    private static final String PLANTNET_API_URL = "https://my-api.plantnet.org/v2/identify/all?api-key=";
+
+    private static final String TREFFLE_API_KEY = "RLvxYZI7mTFZVV5JVRcj__R4kFwL74vuVCLbI0UYRtU"; // Reemplaza con tu key de Trefle
+    private static final String TREFFLE_API_URL = "https://trefle.io/api/v1/plants/search";
 
     // Views
     private ImageView imgPlantaManual;
@@ -90,6 +95,8 @@ public class AgregarPlantaFragment extends Fragment {
     private String nombrePlantaIA;
     private String nombreCientificoIA;
     private String descripcionIA;
+    private String familiaIA;
+    private String generoIA;
     private float probabilidadIA;
     private int diasRiegoIA;
     private int diasFertilizanteIA;
@@ -273,7 +280,7 @@ public class AgregarPlantaFragment extends Fragment {
             if (btnAnalizarIA != null) {
                 btnAnalizarIA.setOnClickListener(v -> {
                     Log.d("AgregarPlanta", "Botón analizar IA clickeado");
-                    analizarConIA();
+                    analizarConPlantNet();
                 });
             } else {
                 Log.e("AgregarPlanta", "btnAnalizarIA es NULL");
@@ -297,7 +304,7 @@ public class AgregarPlantaFragment extends Fragment {
                 Log.e("AgregarPlanta", "btnUsarDatosIA es NULL");
             }
 
-            // CONFIGURAR SEEKBAR - CON VERIFICACIÓN EXTRA
+
             Log.d("AgregarPlanta", "Buscando seekBarRiegoManual...");
             if (seekBarRiegoManual != null) {
                 Log.d("AgregarPlanta", "✅ seekBarRiegoManual encontrado, configurando listener...");
@@ -422,7 +429,8 @@ public class AgregarPlantaFragment extends Fragment {
         }, 1000);
     }
 
-    private void analizarConIA() {
+    // ✅ MÉTODO PRINCIPAL: Analizar con PlantNet (identificación por imagen)
+    private void analizarConPlantNet() {
         if (imagenBitmap == null) {
             Toast.makeText(requireContext(), "⚠️ Primero selecciona una imagen", Toast.LENGTH_SHORT).show();
             return;
@@ -430,40 +438,29 @@ public class AgregarPlantaFragment extends Fragment {
 
         progressBarManual.setVisibility(View.VISIBLE);
         btnAnalizarIA.setEnabled(false);
-
-        String imageBase64 = bitmapToBase64(imagenBitmap);
+        tvPlantaIdentificada.setText("🔍 Analizando imagen...");
 
         try {
-            JsonObject requestBody = new JsonObject();
-            requestBody.addProperty("api_key", PLANT_ID_API_KEY);
+            // ✅ CONVERTIR BITMAP A BYTE ARRAY PARA PLANTNET
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            imagenBitmap.compress(Bitmap.CompressFormat.JPEG, 85, byteArrayOutputStream);
+            byte[] imageBytes = byteArrayOutputStream.toByteArray();
 
-            JsonArray imagesArray = new JsonArray();
-            imagesArray.add(imageBase64);
-            requestBody.add("images", imagesArray);
+            // ✅ CREAR REQUEST PARA PLANTNET
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("organs", "auto")
+                    .addFormDataPart("images", "plant_image.jpg",
+                            RequestBody.create(MediaType.parse("image/jpeg"), imageBytes))
+                    .build();
 
-            JsonArray modifiersArray = new JsonArray();
-            modifiersArray.add("crops_fast");
-            modifiersArray.add("similar_images");
-            requestBody.add("modifiers", modifiersArray);
-
-            requestBody.addProperty("plant_language", "es");
-
-            JsonArray plantDetailsArray = new JsonArray();
-            plantDetailsArray.add("common_names");
-            plantDetailsArray.add("url");
-            plantDetailsArray.add("description");
-            plantDetailsArray.add("taxonomy");
-            requestBody.add("plant_details", plantDetailsArray);
-
-            RequestBody body = RequestBody.create(
-                    MediaType.parse("application/json"),
-                    requestBody.toString()
-            );
+            // ✅ URL COMPLETA CON API KEY DE PLANTNET
+            String url = PLANTNET_API_URL + PLANTNET_API_KEY + "&include-related-images=true&no-reject=false&lang=es";
 
             Request request = new Request.Builder()
-                    .url(PLANT_ID_API_URL)
-                    .post(body)
-                    .addHeader("Content-Type", "application/json")
+                    .url(url)
+                    .post(requestBody)
+                    .addHeader("Accept", "application/json")
                     .build();
 
             client.newCall(request).enqueue(new Callback() {
@@ -472,7 +469,7 @@ public class AgregarPlantaFragment extends Fragment {
                     requireActivity().runOnUiThread(() -> {
                         progressBarManual.setVisibility(View.GONE);
                         btnAnalizarIA.setEnabled(true);
-                        Toast.makeText(requireContext(), "❌ Error de conexión", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "❌ Error de conexión con PlantNet", Toast.LENGTH_SHORT).show();
                     });
                 }
 
@@ -484,121 +481,401 @@ public class AgregarPlantaFragment extends Fragment {
                         btnAnalizarIA.setEnabled(true);
 
                         if (response.isSuccessful()) {
-                            procesarRespuestaIA(responseBody);
+                            Log.d("AgregarPlanta", "✅ PlantNet identificó la planta");
+                            procesarRespuestaPlantNet(responseBody);
                         } else {
-                            Toast.makeText(requireContext(), "❌ Error en el análisis", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), "❌ Error en identificación", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
             });
 
         } catch (Exception e) {
-            progressBarManual.setVisibility(View.GONE);
-            btnAnalizarIA.setEnabled(true);
-            Toast.makeText(requireContext(), "❌ Error creando solicitud", Toast.LENGTH_SHORT).show();
+            requireActivity().runOnUiThread(() -> {
+                progressBarManual.setVisibility(View.GONE);
+                btnAnalizarIA.setEnabled(true);
+                Toast.makeText(requireContext(), "❌ Error procesando imagen", Toast.LENGTH_SHORT).show();
+            });
         }
     }
 
-    private void procesarRespuestaIA(String responseBody) {
+    // ✅ PROCESAR RESPUESTA DE PLANTNET Y BUSCAR EN TREFLE
+    private void procesarRespuestaPlantNet(String responseBody) {
         try {
-            Log.d("AgregarPlanta", "Procesando respuesta IA: " + responseBody);
-
             JsonObject jsonResponse = new Gson().fromJson(responseBody, JsonObject.class);
 
-            if (jsonResponse.has("suggestions")) {
-                JsonArray suggestions = jsonResponse.getAsJsonArray("suggestions");
+            if (jsonResponse.has("results") && jsonResponse.getAsJsonArray("results").size() > 0) {
+                JsonArray results = jsonResponse.getAsJsonArray("results");
 
-                if (suggestions.size() > 0) {
-                    JsonObject firstSuggestion = suggestions.get(0).getAsJsonObject();
+                // ✅ OBTENER LA MEJOR PREDICCIÓN
+                JsonObject mejorResultado = results.get(0).getAsJsonObject();
 
-                    // ✅ CORRECCIÓN: Hacer las variables final o efectivamente final
-                    final float probabilidad = firstSuggestion.has("probability") ?
-                            firstSuggestion.get("probability").getAsFloat() * 100 : 0;
+                if (mejorResultado.has("species")) {
+                    JsonObject species = mejorResultado.getAsJsonObject("species");
 
-                    // ✅ CORRECCIÓN: Extraer detalles de la planta correctamente
-                    final String nombreComun;
-                    final String nombreCientifico;
-                    final String descripcion;
+                    // ✅ EXTRAER NOMBRE CIENTÍFICO DE PLANTNET
+                    nombreCientificoIA = species.has("scientificName") ?
+                            species.get("scientificName").getAsString() : "Desconocido";
 
-                    if (firstSuggestion.has("plant_details")) {
-                        JsonObject plantDetails = firstSuggestion.getAsJsonObject("plant_details");
-
-                        // Nombre común
-                        if (plantDetails.has("common_names") && plantDetails.getAsJsonArray("common_names").size() > 0) {
-                            nombreComun = plantDetails.getAsJsonArray("common_names").get(0).getAsString();
-                        } else {
-                            nombreComun = "No identificado";
-                        }
-
-                        // Nombre científico
-                        if (plantDetails.has("scientific_name")) {
-                            nombreCientifico = plantDetails.get("scientific_name").getAsString();
-                        } else {
-                            nombreCientifico = "No disponible";
-                        }
-
-                        // Descripción
-                        if (plantDetails.has("description") && plantDetails.getAsJsonObject("description").has("value")) {
-                            descripcion = plantDetails.getAsJsonObject("description").get("value").getAsString();
-                        } else {
-                            descripcion = "Sin descripción disponible";
-                        }
+                    // ✅ EXTRAER NOMBRE COMÚN DE PLANTNET
+                    if (species.has("commonNames") && species.getAsJsonArray("commonNames").size() > 0) {
+                        nombrePlantaIA = species.getAsJsonArray("commonNames").get(0).getAsString();
                     } else {
-                        nombreComun = "No identificado";
-                        nombreCientifico = "No disponible";
-                        descripcion = "Sin descripción disponible";
+                        nombrePlantaIA = nombreCientificoIA;
                     }
 
-                    // ✅ CORRECCIÓN: Guardar datos de IA en variables de instancia
-                    nombrePlantaIA = nombreComun;
-                    nombreCientificoIA = nombreCientifico;
-                    descripcionIA = descripcion;
-                    probabilidadIA = probabilidad;
-                    diasRiegoIA = calcularDiasRiego(nombreComun);
-                    diasFertilizanteIA = calcularDiasFertilizante(nombreComun);
+                    probabilidadIA = mejorResultado.has("score") ?
+                            mejorResultado.get("score").getAsFloat() * 100 : 0;
 
-                    // ✅ CORRECCIÓN: Usar variables final en el lambda
-                    requireActivity().runOnUiThread(() -> {
-                        String resultado = String.format("🌱 %s (%.1f%%)\n📚 %s",
-                                nombreComun, probabilidad, nombreCientifico);
-                        tvPlantaIdentificada.setText(resultado);
-                        layoutResultadoIA.setVisibility(View.VISIBLE);
+                    // ✅ MOSTRAR RESULTADO TEMPORAL
+                    tvPlantaIdentificada.setText(String.format("🌱 %s (%.1f%%)\n📚 %s\n🔍 Obteniendo datos detallados...",
+                            nombrePlantaIA, probabilidadIA, nombreCientificoIA));
+                    layoutResultadoIA.setVisibility(View.VISIBLE);
 
-                        Toast.makeText(requireContext(), "✅ Planta identificada", Toast.LENGTH_SHORT).show();
-                        Log.d("AgregarPlanta", "✅ Planta identificada: " + nombreComun + " (" + probabilidad + "%)");
-                    });
+                    // ✅ BUSCAR DATOS DETALLADOS EN TREFLE
+                    buscarDatosTrefle(nombreCientificoIA);
 
                 } else {
-                    requireActivity().runOnUiThread(() -> {
-                        Toast.makeText(requireContext(), "🔍 No se pudo identificar la planta", Toast.LENGTH_SHORT).show();
-                        Log.d("AgregarPlanta", "❌ No hay sugerencias en la respuesta");
-                    });
+                    Toast.makeText(requireContext(), "🔍 No se pudo identificar la planta", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                requireActivity().runOnUiThread(() -> {
-                    Toast.makeText(requireContext(), "❌ Error en respuesta de la API", Toast.LENGTH_SHORT).show();
-                    Log.d("AgregarPlanta", "❌ No hay campo 'suggestions' en la respuesta");
-                });
+                Toast.makeText(requireContext(), "🔍 No se encontraron coincidencias", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
-            Log.e("AgregarPlanta", "❌ Error procesando respuesta IA: " + e.getMessage());
-            requireActivity().runOnUiThread(() -> {
-                Toast.makeText(requireContext(), "❌ Error procesando respuesta", Toast.LENGTH_SHORT).show();
-            });
+            Log.e("AgregarPlanta", "❌ Error procesando PlantNet: " + e.getMessage());
+            Toast.makeText(requireContext(), "❌ Error procesando respuesta", Toast.LENGTH_SHORT).show();
         }
     }
 
+    // ✅ BUSCAR DATOS DETALLADOS EN TREFLE
+    private void buscarDatosTrefle(String nombreCientifico) {
+        try {
+            String url = TREFFLE_API_URL + "?token=" + TREFFLE_API_KEY +
+                    "&q=" + java.net.URLEncoder.encode(nombreCientifico, "UTF-8");
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .get()
+                    .addHeader("Accept", "application/json")
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    requireActivity().runOnUiThread(() -> {
+                        Log.e("AgregarPlanta", "❌ Error Trefle: " + e.getMessage());
+                        usarDatosBasicos();
+                    });
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    String responseBody = response.body().string();
+                    requireActivity().runOnUiThread(() -> {
+                        if (response.isSuccessful()) {
+                            procesarDatosTrefle(responseBody);
+                        } else {
+                            buscarTrefleAlternativo(nombreCientifico);
+                        }
+                    });
+                }
+            });
+
+        } catch (Exception e) {
+            Log.e("AgregarPlanta", "❌ Error búsqueda Trefle: " + e.getMessage());
+            usarDatosBasicos();
+        }
+    }
+
+    // ✅ PROCESAR DATOS DE TREFLE
+    private void procesarDatosTrefle(String responseBody) {
+        try {
+            JsonObject jsonResponse = new Gson().fromJson(responseBody, JsonObject.class);
+
+            if (jsonResponse.has("data") && jsonResponse.getAsJsonArray("data").size() > 0) {
+                JsonObject plantaData = jsonResponse.getAsJsonArray("data").get(0).getAsJsonObject();
+
+                // ✅ ACTUALIZAR DATOS CON TREFLE
+                if (plantaData.has("common_name") && plantaData.get("common_name") != null &&
+                        !plantaData.get("common_name").isJsonNull()) {
+                    nombrePlantaIA = plantaData.get("common_name").getAsString();
+                }
+
+                if (plantaData.has("scientific_name") && plantaData.get("scientific_name") != null) {
+                    nombreCientificoIA = plantaData.get("scientific_name").getAsString();
+                }
+
+                if (plantaData.has("family") && plantaData.get("family") != null) {
+                    familiaIA = plantaData.get("family").getAsString();
+                } else {
+                    familiaIA = "No especificada";
+                }
+
+                if (plantaData.has("genus") && plantaData.get("genus") != null) {
+                    generoIA = plantaData.get("genus").getAsString();
+                } else {
+                    generoIA = "No especificado";
+                }
+
+                // ✅ CREAR DESCRIPCIÓN DETALLADA
+                StringBuilder descripcionBuilder = new StringBuilder();
+                descripcionBuilder.append("🔬 **Información botánica:**\n");
+                descripcionBuilder.append("• Nombre científico: ").append(nombreCientificoIA).append("\n");
+                descripcionBuilder.append("• Familia: ").append(familiaIA).append("\n");
+                descripcionBuilder.append("• Género: ").append(generoIA).append("\n\n");
+
+                if (plantaData.has("observations") && plantaData.get("observations") != null) {
+                    String observaciones = plantaData.get("observaciones").getAsString();
+                    if (observaciones.length() > 50) {
+                        descripcionBuilder.append("📝 **Observaciones:**\n");
+                        descripcionBuilder.append(observaciones.substring(0, Math.min(150, observaciones.length())));
+                        if (observaciones.length() > 150) descripcionBuilder.append("...");
+                        descripcionBuilder.append("\n\n");
+                    }
+                }
+
+                descripcionBuilder.append("💧 **Cuidados recomendados:**\n");
+                descripcionBuilder.append(obtenerConsejosCuidados(familiaIA, generoIA));
+
+                descripcionIA = descripcionBuilder.toString();
+
+                // ✅ CALCULAR DÍAS
+                diasRiegoIA = calcularDiasRiegoPorFamilia(familiaIA, generoIA);
+                diasFertilizanteIA = calcularDiasFertilizantePorFamilia(familiaIA, generoIA);
+
+                // ✅ ACTUALIZAR INTERFAZ
+                actualizarInterfazConDatosCompletos();
+
+                Toast.makeText(requireContext(), "✅ Datos completos obtenidos", Toast.LENGTH_SHORT).show();
+
+            } else {
+                usarDatosBasicos();
+            }
+
+        } catch (Exception e) {
+            Log.e("AgregarPlanta", "❌ Error procesando Trefle: " + e.getMessage());
+            usarDatosBasicos();
+        }
+    }
+
+    // ✅ BÚSQUEDA ALTERNATIVA EN TREFLE
+    private void buscarTrefleAlternativo(String nombreCientifico) {
+        try {
+            String[] partesNombre = nombreCientifico.split(" ");
+            if (partesNombre.length >= 1) {
+                String genero = partesNombre[0];
+
+                String url = TREFFLE_API_URL + "?token=" + TREFFLE_API_KEY +
+                        "&q=" + java.net.URLEncoder.encode(genero, "UTF-8");
+
+                Request request = new Request.Builder()
+                        .url(url)
+                        .get()
+                        .addHeader("Accept", "application/json")
+                        .build();
+
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        requireActivity().runOnUiThread(() -> usarDatosBasicos());
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        if (response.isSuccessful()) {
+                            String responseBody = response.body().string();
+                            requireActivity().runOnUiThread(() -> {
+                                procesarDatosGenericosTrefle(responseBody, genero);
+                            });
+                        } else {
+                            requireActivity().runOnUiThread(() -> usarDatosBasicos());
+                        }
+                    }
+                });
+            } else {
+                usarDatosBasicos();
+            }
+        } catch (Exception e) {
+            usarDatosBasicos();
+        }
+    }
+
+    // ✅ PROCESAR DATOS GENÉRICOS DE TREFLE
+    private void procesarDatosGenericosTrefle(String responseBody, String genero) {
+        try {
+            JsonObject jsonResponse = new Gson().fromJson(responseBody, JsonObject.class);
+
+            if (jsonResponse.has("data") && jsonResponse.getAsJsonArray("data").size() > 0) {
+                JsonObject plantaData = jsonResponse.getAsJsonArray("data").get(0).getAsJsonObject();
+
+                if (plantaData.has("family") && plantaData.get("family") != null) {
+                    familiaIA = plantaData.get("family").getAsString();
+                }
+
+                if (plantaData.has("common_name") && plantaData.get("common_name") != null) {
+                    nombrePlantaIA = plantaData.get("common_name").getAsString() + " (género " + genero + ")";
+                }
+
+                descripcionIA = "🌿 **Planta del género " + genero + "**\n\n" +
+                        "Esta planta pertenece al género " + genero + ".\n\n" +
+                        "💡 **Consejo:** Investiga más sobre esta especie específica para cuidados exactos.";
+
+                diasRiegoIA = 5;
+                diasFertilizanteIA = 30;
+
+                actualizarInterfazConDatosCompletos();
+            } else {
+                usarDatosBasicos();
+            }
+        } catch (Exception e) {
+            usarDatosBasicos();
+        }
+    }
+
+    // ✅ USAR DATOS BÁSICOS
+    private void usarDatosBasicos() {
+        Log.d("AgregarPlanta", "⚠️ Usando datos básicos");
+
+        descripcionIA = "🌱 **Planta identificada:** " + nombrePlantaIA + "\n" +
+                "🔬 **Nombre científico:** " + nombreCientificoIA + "\n\n" +
+                "💡 **Consejos generales:**\n" +
+                "• Riego moderado\n" +
+                "• Luz indirecta\n" +
+                "• Tierra bien drenada\n\n" +
+                "⚠️ *Para cuidados específicos, investiga más sobre esta especie.*";
+
+        diasRiegoIA = calcularDiasRiego(nombrePlantaIA);
+        diasFertilizanteIA = calcularDiasFertilizante(nombrePlantaIA);
+
+        actualizarInterfazConDatosCompletos();
+        Toast.makeText(requireContext(), "⚠️ Datos básicos cargados", Toast.LENGTH_SHORT).show();
+    }
+
+    // ✅ ACTUALIZAR INTERFAZ
+    private void actualizarInterfazConDatosCompletos() {
+        String resultado = String.format("✅ IDENTIFICADA\n🌱 %s\n📚 %s\n👨‍🔬 %s\n💧 Riego: %d días\n🌱 Fertilización: %d días",
+                nombrePlantaIA,
+                nombreCientificoIA,
+                familiaIA != null ? familiaIA : "Familia no especificada",
+                diasRiegoIA,
+                diasFertilizanteIA);
+
+        tvPlantaIdentificada.setText(resultado);
+        layoutResultadoIA.setVisibility(View.VISIBLE);
+
+        Log.d("AgregarPlanta", "✅ Datos completos cargados");
+    }
+
+    // ✅ OBTENER CONSEJOS DE CUIDADOS
+    private String obtenerConsejosCuidados(String familia, String genero) {
+        StringBuilder consejos = new StringBuilder();
+
+        if (familia != null) {
+            switch (familia.toLowerCase()) {
+                case "cactaceae":
+                    consejos.append("• Riego escaso (cada 10-14 días)\n");
+                    consejos.append("• Pleno sol\n");
+                    consejos.append("• Suelo arenoso y bien drenado\n");
+                    consejos.append("• No tolera heladas\n");
+                    break;
+                case "orchidaceae":
+                    consejos.append("• Riego moderado (cada 7-10 días)\n");
+                    consejos.append("• Luz indirecta brillante\n");
+                    consejos.append("• Alta humedad ambiental\n");
+                    consejos.append("• Sustrato especial para orquídeas\n");
+                    break;
+                case "rosaceae":
+                    consejos.append("• Riego regular (cada 3-5 días)\n");
+                    consejos.append("• Pleno sol (6+ horas)\n");
+                    consejos.append("• Poda regular después de floración\n");
+                    consejos.append("• Fertilización mensual en crecimiento\n");
+                    break;
+                case "lamiaceae":
+                    consejos.append("• Riego moderado (cada 4-6 días)\n");
+                    consejos.append("• Sol parcial o completo\n");
+                    consejos.append("• Suelo bien drenado\n");
+                    consejos.append("• Poda para mantener forma\n");
+                    break;
+                case "asteraceae":
+                    consejos.append("• Riego regular (cada 3-4 días)\n");
+                    consejos.append("• Pleno sol\n");
+                    consejos.append("• Suelo fértil y drenado\n");
+                    consejos.append("• Deadheading para más flores\n");
+                    break;
+                default:
+                    consejos.append("• Riego moderado (cada 4-7 días)\n");
+                    consejos.append("• Luz indirecta brillante\n");
+                    consejos.append("• Evitar encharcamientos\n");
+                    consejos.append("• Observar crecimiento\n");
+                    break;
+            }
+        } else {
+            consejos.append("• Riego moderado (cada 4-7 días)\n");
+            consejos.append("• Luz indirecta brillante\n");
+            consejos.append("• Suelo bien drenado\n");
+            consejos.append("• Observar respuesta de la planta\n");
+        }
+
+        return consejos.toString();
+    }
+
+    // ✅ CALCULAR DÍAS DE RIEGO
+    private int calcularDiasRiegoPorFamilia(String familia, String genero) {
+        if (familia == null) return 5;
+
+        switch (familia.toLowerCase()) {
+            case "cactaceae":
+                return 14;
+            case "succulent":
+            case "crassulaceae":
+                return 10;
+            case "orchidaceae":
+                return 7;
+            case "rosaceae":
+                return 3;
+            case "lamiaceae":
+                return 4;
+            case "solanaceae":
+                return 2;
+            case "asteraceae":
+                return 4;
+            default:
+                return 5;
+        }
+    }
+
+    // ✅ CALCULAR DÍAS DE FERTILIZACIÓN
+    private int calcularDiasFertilizantePorFamilia(String familia, String genero) {
+        if (familia == null) return 30;
+
+        switch (familia.toLowerCase()) {
+            case "cactaceae":
+                return 90;
+            case "succulent":
+            case "crassulaceae":
+                return 60;
+            case "orchidaceae":
+                return 30;
+            case "rosaceae":
+                return 21;
+            case "solanaceae":
+                return 14;
+            case "lamiaceae":
+                return 25;
+            default:
+                return 30;
+        }
+    }
+
+    // ✅ USAR DATOS DE IA
     private void usarDatosIA() {
         if (nombrePlantaIA != null) {
-            // Establecer título del registro con el nombre de la planta
             etTituloRegistro.setText("Mi " + nombrePlantaIA);
             etNombrePlanta.setText(nombrePlantaIA);
             etDescripcionBreve.setText(descripcionIA);
 
-            // Intentar determinar categoría automáticamente
             determinarCategoriaAutomatica(nombrePlantaIA);
 
-            // Actualizar SeekBars
             if (seekBarRiegoManual != null) {
                 seekBarRiegoManual.setProgress(diasRiegoIA - 1);
             }
@@ -611,7 +888,7 @@ public class AgregarPlantaFragment extends Fragment {
             }
 
             layoutResultadoIA.setVisibility(View.GONE);
-            Toast.makeText(requireContext(), "✅ Datos de IA aplicados", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "✅ Datos aplicados automáticamente", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -639,13 +916,11 @@ public class AgregarPlantaFragment extends Fragment {
         String prioridad = actvPrioridad.getText().toString().trim();
         String fechaCreacion = tvFechaCreacion.getText().toString().trim();
 
-        // Validaciones
         if (titulo.isEmpty() || nombre.isEmpty() || descripcion.isEmpty() || prioridad.isEmpty()) {
             Toast.makeText(requireContext(), "⚠️ Completa todos los campos obligatorios (*)", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Obtener días de riego y fertilizante
         int diasRiego = seekBarRiegoManual != null ? seekBarRiegoManual.getProgress() + 1 : 7;
         int diasFertilizante = seekBarFertilizante != null ? seekBarFertilizante.getProgress() + 1 : 30;
         boolean notificaciones = switchNotificacionesManual.isChecked();
@@ -661,29 +936,21 @@ public class AgregarPlantaFragment extends Fragment {
             return;
         }
 
-        // Convertir imagen
         String imagenBase64 = bitmapToBase64(imagenBitmap);
 
-        // ✅ CORREGIDO: Obtener timestamp actual en milisegundos y calcular próximas fechas
         long timestampActual = System.currentTimeMillis();
         long timestampActualSegundos = timestampActual / 1000;
 
-        // Calcular próximas fechas de riego y fertilización
         Calendar calendar = Calendar.getInstance();
-
-        // Próximo riego: hoy + días de riego
         calendar.add(Calendar.DAY_OF_YEAR, diasRiego);
         long proximoRiego = calendar.getTimeInMillis() / 1000;
 
-        // Próxima fertilización: hoy + días de fertilizante
         calendar.setTimeInMillis(timestampActual);
         calendar.add(Calendar.DAY_OF_YEAR, diasFertilizante);
         long proximaFertilizacion = calendar.getTimeInMillis() / 1000;
 
-        // Crear planta con todos los campos - ✅ ACTUALIZADO PARA NUEVO SISTEMA DE NOTIFICACIONES
         Map<String, Object> planta = new HashMap<>();
 
-        // Información básica
         planta.put("tituloRegistro", titulo);
         planta.put("nombreComun", nombre);
         planta.put("nombreCientifico", nombreCientificoIA != null ? nombreCientificoIA : "No identificado");
@@ -697,55 +964,43 @@ public class AgregarPlantaFragment extends Fragment {
         planta.put("imagenBase64", imagenBase64);
         planta.put("usuarioId", user.getUid());
 
-        // Configuración de cuidados
         planta.put("diasRiego", diasRiego);
         planta.put("diasFertilizante", diasFertilizante);
 
-        // ✅ CORREGIDO: Fechas para notificaciones (en segundos)
         planta.put("fechaRegistro", timestampActualSegundos);
         planta.put("ultimoRiego", timestampActualSegundos);
         planta.put("ultimaFertilizacion", timestampActualSegundos);
         planta.put("proximoRiego", proximoRiego);
         planta.put("proximaFertilizacion", proximaFertilizacion);
 
-        // Identificación por IA
         planta.put("probabilidadIdentificacion", probabilidadIA);
         planta.put("agregadoManual", nombrePlantaIA == null);
 
-        // ✅ MEJORADO: Sistema de notificaciones
         planta.put("notificacionesActivadas", notificaciones);
         planta.put("regadoHoy", false);
         planta.put("fertilizadoHoy", false);
         planta.put("totalRiegos", 0);
         planta.put("totalFertilizaciones", 0);
 
-        // Estado y seguimiento
         planta.put("estadoSeguimiento", "Activo");
         planta.put("progreso", 0);
         planta.put("requiereSeguimiento", true);
         planta.put("notasAdicionales", "");
         planta.put("necesitaAtencion", false);
-        planta.put("salud", 100); // Salud inicial al 100%
+        planta.put("salud", 100);
 
-        // Guardar en Firestore
         db.collection("plantas")
                 .add(planta)
                 .addOnSuccessListener(documentReference -> {
                     String plantaId = documentReference.getId();
 
                     Log.d("AgregarPlanta", "✅ Planta guardada - ID: " + plantaId);
-                    Log.d("AgregarPlanta", "📅 Configuración - Riego: " + diasRiego + " días, Fertilización: " + diasFertilizante + " días");
-                    Log.d("AgregarPlanta", "🔔 Notificaciones: " + (notificaciones ? "ACTIVADAS" : "DESACTIVADAS"));
-
                     Toast.makeText(requireContext(), "✅ Planta guardada exitosamente", Toast.LENGTH_SHORT).show();
 
-                    // ✅ MEJORADO: Integración con nuevo sistema de notificaciones
                     if (notificaciones) {
                         try {
-                            // Programar notificaciones para esta planta específica
                             programarNotificacionesParaPlanta(plantaId, nombre, diasRiego, diasFertilizante);
 
-                            // Verificar inmediatamente si necesita notificaciones
                             if (getActivity() instanceof MainActivity) {
                                 ((MainActivity) getActivity()).checkPlantsNow();
                             }
@@ -755,7 +1010,6 @@ public class AgregarPlantaFragment extends Fragment {
                             mensajeNotif += "\n🌱 Fertilización cada " + diasFertilizante + " días";
 
                             Toast.makeText(requireContext(), mensajeNotif, Toast.LENGTH_LONG).show();
-                            Log.d("AgregarPlanta", "🔔 Sistema de notificaciones configurado para: " + nombre);
 
                         } catch (Exception e) {
                             Log.e("AgregarPlanta", "❌ Error configurando notificaciones: " + e.getMessage());
@@ -763,21 +1017,18 @@ public class AgregarPlantaFragment extends Fragment {
                         }
                     } else {
                         Toast.makeText(requireContext(), "✅ Planta guardada - 🔕 Notificaciones desactivadas", Toast.LENGTH_SHORT).show();
-                        Log.d("AgregarPlanta", "🔕 Notificaciones desactivadas para: " + nombre);
                     }
 
-                    // ✅ MEJORADO: Redirigir a MIS PLANTAS con confirmación
                     new android.os.Handler().postDelayed(() -> {
                         if (getActivity() instanceof MainActivity) {
                             final MainActivity activity = (MainActivity) getActivity();
                             activity.loadFragment(new MisPlantasFragment(), R.id.nav_mis_plantas);
 
-                            // Opcional: Mostrar mensaje adicional en MainActivity
                             activity.runOnUiThread(() ->
                                     Toast.makeText(activity, "🌿 " + nombre + " agregada a tu colección", Toast.LENGTH_SHORT).show()
                             );
                         }
-                    }, 1500); // Pequeño delay para que el usuario vea el mensaje
+                    }, 1500);
 
                 })
                 .addOnFailureListener(e -> {
@@ -786,25 +1037,14 @@ public class AgregarPlantaFragment extends Fragment {
                 });
     }
 
-    // ✅ NUEVO MÉTODO MEJORADO: Programar notificaciones con información de días
     private void programarNotificacionesParaPlanta(String plantaId, String nombrePlanta, int diasRiego, int diasFertilizante) {
         try {
             Log.d("AgregarPlanta", "🔔 Programando notificaciones para: " + nombrePlanta);
-            Log.d("AgregarPlanta", "   - Riego cada: " + diasRiego + " días");
-            Log.d("AgregarPlanta", "   - Fertilización cada: " + diasFertilizante + " días");
 
-            // El sistema principal (PlantReminderReceiver) ya está programado
-            // Solo necesitamos asegurar que esté activo
             if (getActivity() instanceof MainActivity) {
                 MainActivity activity = (MainActivity) getActivity();
-
-                // Verificar que el sistema de notificaciones esté activo
                 activity.schedulePlantReminders();
-
-                // ✅ NUEVO: Enviar notificación de confirmación con información detallada
                 enviarNotificacionConfirmacion(nombrePlanta, diasRiego, diasFertilizante);
-
-                // ✅ NUEVO: Programar notificación de recordatorio futuro
                 programarRecordatorioFuturo(nombrePlanta, diasRiego, diasFertilizante, plantaId);
             }
 
@@ -813,13 +1053,8 @@ public class AgregarPlantaFragment extends Fragment {
         }
     }
 
-    // ✅ NUEVO MÉTODO: Programar recordatorio futuro
-    // ✅ MÉTODO CORREGIDO Y SIMPLIFICADO
     private void programarRecordatorioFuturo(String nombrePlanta, int diasRiego, int diasFertilizante, String plantaId) {
         try {
-            Log.d("AgregarPlanta", "⏰ Configurando recordatorios para: " + nombrePlanta);
-
-            // Calcular fecha para el recordatorio (mañana a las 9:00 AM)
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DAY_OF_YEAR, 1);
             calendar.set(Calendar.HOUR_OF_DAY, 9);
@@ -828,10 +1063,8 @@ public class AgregarPlantaFragment extends Fragment {
 
             long recordatorioTimestamp = calendar.getTimeInMillis();
 
-            // Obtener AlarmManager
             AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(android.content.Context.ALARM_SERVICE);
 
-            // Crear intent para el receiver
             Intent intent = new Intent(requireContext(), PlantReminderReceiver.class);
             intent.setAction("ACTION_SINGLE_REMINDER");
             intent.putExtra("planta_nombre", nombrePlanta);
@@ -839,24 +1072,20 @@ public class AgregarPlantaFragment extends Fragment {
             intent.putExtra("dias_fertilizante", diasFertilizante);
             intent.putExtra("planta_id", plantaId);
 
-            // Crear PendingIntent
             PendingIntent pendingIntent = PendingIntent.getBroadcast(
                     requireContext(),
-                    (int) System.currentTimeMillis(), // ID único
+                    (int) System.currentTimeMillis(),
                     intent,
                     PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
             );
 
-            // Programar la alarma
             if (alarmManager != null) {
-                // Usar set() que es compatible con todas las versiones
                 alarmManager.set(
                         AlarmManager.RTC_WAKEUP,
                         recordatorioTimestamp,
                         pendingIntent
                 );
-                Log.d("AgregarPlanta", "✅ Recordatorio programado para: " +
-                        new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date(recordatorioTimestamp)));
+                Log.d("AgregarPlanta", "✅ Recordatorio programado");
             } else {
                 Log.e("AgregarPlanta", "❌ AlarmManager no disponible");
             }
@@ -867,14 +1096,12 @@ public class AgregarPlantaFragment extends Fragment {
         }
     }
 
-    // ✅ MÉTODO ACTUALIZADO: Notificación de confirmación con información detallada
     private void enviarNotificacionConfirmacion(String nombrePlanta, int diasRiego, int diasFertilizante) {
         try {
             if (getActivity() instanceof MainActivity) {
                 MainActivity activity = (MainActivity) getActivity();
                 NotificationHelper notificationHelper = new NotificationHelper(requireContext());
 
-                // ✅ MEJORADO: Mensaje más informativo con días específicos
                 String titulo = "🌱 " + nombrePlanta + " Agregada";
                 String mensaje = "✅ Configuración guardada exitosamente\n\n";
                 mensaje += "📅 Próximo riego: en " + diasRiego + " días\n";
@@ -889,7 +1116,7 @@ public class AgregarPlantaFragment extends Fragment {
                         "info"
                 );
 
-                Log.d("AgregarPlanta", "📲 Notificación de confirmación enviada con información de días");
+                Log.d("AgregarPlanta", "📲 Notificación de confirmación enviada");
             }
         } catch (Exception e) {
             Log.e("AgregarPlanta", "❌ Error enviando notificación de confirmación: " + e.getMessage());
@@ -926,9 +1153,7 @@ public class AgregarPlantaFragment extends Fragment {
         }
     }
 
-    // Métodos para cámara y galería
     private void tomarFoto() {
-        // Verificar permisos primero
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
         } else {
@@ -948,7 +1173,6 @@ public class AgregarPlantaFragment extends Fragment {
         try {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-            // Verificar que hay una app de cámara disponible
             if (takePictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             } else {

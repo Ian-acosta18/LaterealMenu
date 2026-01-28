@@ -48,15 +48,12 @@ public class CalendarioFragment extends Fragment {
 
     private static final String TAG = "CalendarioFragment";
 
-    // ✅ GROQ CLOUD API - MODELOS ACTUALIZADOS
-    // Obtén tu API Key gratis en: https://console.groq.com/keys
-    private static final String GROQ_API_KEY = "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"; // REEMPLAZA ESTO
+
+    private static final String GROQ_API_KEY = "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";
     private static final String GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-    // MODELOS DISPONIBLES ACTUALMENTE (Elige uno):
-    private static final String MODEL = "llama-3.3-70b-versatile"; // ✅ RECOMENDADO - Potente y rápido
-    // private static final String MODEL = "mixtral-8x7b-32768";    // Alternativa gratuita
-    // private static final String MODEL = "gemma2-9b-it";          // Más liviano
+
+    private static final String MODEL = "llama-3.3-70b-versatile";
 
     private TextView tvMesSeleccionado;
     private GridView gridMeses;
@@ -314,7 +311,7 @@ public class CalendarioFragment extends Fragment {
             layoutResultados.setVisibility(View.GONE);
         }
 
-        // ✅ VERIFICAR CONEXIÓN A INTERNET
+
         if (!isNetworkAvailable()) {
             if (progressBar != null) {
                 progressBar.setVisibility(View.GONE);
@@ -324,7 +321,7 @@ public class CalendarioFragment extends Fragment {
             return;
         }
 
-        // ✅ VERIFICAR API KEY (COMENTA ESTO TEMPORALMENTE SI QUIERES PROBAR)
+
         if (GROQ_API_KEY.equals("gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx") || GROQ_API_KEY.isEmpty()) {
             if (progressBar != null) {
                 progressBar.setVisibility(View.GONE);
@@ -336,7 +333,7 @@ public class CalendarioFragment extends Fragment {
 
         Log.d(TAG, "🔍 Iniciando búsqueda con Groq para: " + nombrePlanta + " - Modelo: " + MODEL);
 
-        // ✅ CONSULTAR A GROQ CLOUD
+
         consultarGroq(nombrePlanta);
     }
 
